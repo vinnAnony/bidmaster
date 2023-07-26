@@ -2,6 +2,7 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.db import transaction
 
 
 class Auctioneer(models.Model):
@@ -67,7 +68,11 @@ class Auction(models.Model):
         choices=AuctionStatus.choices, default=AuctionStatus.ACTIVE
     )
     winner = models.ForeignKey(
-        Bidder, related_name="auctions", on_delete=models.DO_NOTHING
+        Bidder,
+        related_name="auctions",
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -82,6 +87,18 @@ class Auction(models.Model):
     def get_absolute_url(self):
         return reverse("auction-detail", kwargs={"pk": self.pk})
 
+    def save(self, *args, **kwargs):
+        is_creating = self._state.adding
+        if is_creating:
+            self.create_auction_room()
+
+        super().save(*args, **kwargs)
+
+    @transaction.atomic
+    def create_auction_room(self):
+        auction_room = AuctionRoom(name=self.title, auction=self)
+        auction_room.save()
+
 
 class AuctionRoom(models.Model):
     class AuctionRoomStatus(models.IntegerChoices):
@@ -94,6 +111,9 @@ class AuctionRoom(models.Model):
     name = models.CharField(max_length=90, null=False, blank=False)
     status = models.IntegerField(
         choices=AuctionRoomStatus.choices, default=AuctionRoomStatus.ACTIVE
+    )
+    auction = models.OneToOneField(
+        Auction, related_name="auction_acc", on_delete=models.CASCADE
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
