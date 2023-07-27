@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path("bidding/", include("bidding.urls")),
+    path("", include("authentic.urls", namespace="authentic")),
+    path("bidding/", include("bidding.urls", namespace="bidding")),
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
