@@ -1,13 +1,42 @@
+{% load compress %}
+{% load static %}
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
     <title>Bidding Rooms</title>
+    {% compress css %}
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" />
+    {% endcompress %}
   </head>
-  <body>
-    What bidding room would you like to enter?<br />
-    <input id="room-name-input" type="text" size="100" /><br />
-    <input id="room-name-submit" type="button" value="Enter" />
+  <body class="flex items-center justify-center min-h-screen">
+    
+    <div class="w-full max-w-xs">
+      What bidding room would you like to enter?
+      <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="room-id">
+            Room Id
+          </label>
+          <input id="room-name-input" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" 
+          type="text" placeholder="Room Id">
+          <p class="text-red-500 text-xs italic">Please choose a valid room.</p>
+        </div>
+        <div class="flex items-center justify-between">
+          <button id="room-name-submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+          type="button">
+            Join Room
+          </button>
+          <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" 
+          href="javascript:void(0)">
+            Can't find room?
+          </a>
+        </div>
+      </form>
+      <p class="text-center text-gray-500 text-xs">
+        &copy;2023 BidMaster. All rights reserved.
+      </p>
+    </div>
 
     <script>
       document.querySelector("#room-name-input").focus();
