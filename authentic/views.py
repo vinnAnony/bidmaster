@@ -30,3 +30,9 @@ def log_in(request):
         else:
             print(form.errors)
     return render(request, "authentic/login.html", {"form": form})
+
+
+@login_required
+def log_out(request):
+    logout(request)
+    return redirect(reverse("authentic:log_in"))
