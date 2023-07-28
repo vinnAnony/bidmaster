@@ -128,6 +128,11 @@ class AuctionRoom(models.Model):
     def get_absolute_url(self):
         return reverse("auction-room-detail", kwargs={"pk": self.pk})
 
+    def save(self, *args, **kwargs):
+        self.name = " ".join(word.capitalize() for word in self.name.split())
+
+        super().save(*args, **kwargs)
+
 
 class AuctionRoomUser(models.Model):
     class AuctionRoomUserRole(models.TextChoices):
