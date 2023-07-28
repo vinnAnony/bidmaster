@@ -1,0 +1,73 @@
+{% load django_browser_reload %}
+{% load compress %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BidMaster - Signup</title>
+  {% compress css %}
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" />
+  {% endcompress %}
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+  <form class="w-full max-w-lg bg-white shadow-md rounded-lg p-6" action="{% url 'authentic:sign_up' %}" method="post">
+    {% csrf_token %}
+    {% comment %} <div class="mb-6">
+      <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+        First Name
+      </label>
+      <input class="appearance-none block w-full bg-slate-50 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" 
+      id="first-name" name="first_name" type="text" placeholder="First Name">
+    </div>
+    <div class="mb-6">
+      <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+        Last Name
+      </label>
+      <input class="appearance-none block w-full bg-slate-50 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" 
+      id="last-name" name="last_name" type="text" placeholder="Last Name">      
+    </div> {% endcomment %}
+    <div class="mb-6">
+      <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+        Username
+      </label>
+      <input class="appearance-none block w-full bg-slate-50 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" 
+      id="last-name" name="username" type="text" placeholder="Last Name">      
+    </div>
+    <div class="flex flex-wrap -mx-3 mb-6">
+      <div class="w-full md:w-1/2 px-3 mb-4 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="password1">
+          Password
+        </label>
+        <input class="appearance-none block w-full bg-slate-50 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
+        id="password1" name="password1" type="password" placeholder="*********">
+      </div>
+      <div class="w-full md:w-1/2 px-3 mb-4 md:mb-0">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="password2">
+          Confirm Password
+        </label>
+        <input class="appearance-none block w-full bg-slate-50 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
+        id="password2" name="password2" type="password" placeholder="*********">
+      </div>
+    </div>
+    {% if messages %}
+    <ul class="my-3">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+            <p class="text-red-500 text-xs italic">{{ message }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <div class="flex justify-center">
+      <button type="submit" class="w-2/3 text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-4 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign Up</button>
+    </div>
+    
+    <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+        Already have an account? <a href="{% url 'authentic:log_in' %}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Login</a>
+    </p>
+  </form>
+</body>
+</html>
