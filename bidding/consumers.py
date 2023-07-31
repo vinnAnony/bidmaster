@@ -6,6 +6,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class BiddingConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        self.user = self.scope["user"]
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "bid_%s" % self.room_name
 
@@ -22,15 +23,17 @@ class BiddingConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
+        username = text_data_json["username"]
 
         # Send message to room group
         await self.channel_layer.group_send(
-            self.room_group_name, {"type": "bid_message", "message": message}
+            self.room_group_name, {"type": "bid_message", "message": message,"username": username}
         )
 
     # Receive message from room group
     async def bid_message(self, event):
         message = event["message"]
+        username = event["username"]
 
         # Send message to WebSocket
-        await self.send(text_data=json.dumps({"message": message}))
+        await self.send(text_data=json.dumps({"message": message,"username":username}))

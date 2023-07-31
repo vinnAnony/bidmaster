@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
@@ -33,7 +34,7 @@ def index(request):
 @login_required
 def room(request, room_name):
     if request.method == "GET":
-        req_user_id = request.user.id
+        req_user = request.user
         req_room_name = " ".join(word.capitalize() for word in room_name.split("_"))
         req_room_id = reverse_room_name(req_room_name)
         
@@ -41,9 +42,14 @@ def room(request, room_name):
             messages.error(request, "Room does not exist.")
             return redirect(reverse("bidding:index"))        
         
-        verify_room_and_room_user(request,req_room_id,req_user_id)
+        verify_room_and_room_user(request,req_room_id,req_user.id)
         
-    return render(request, "room.html", {"room_name": room_name})
+        user_data = json.dumps({
+            'id': req_user.id,
+            'username': req_user.username,
+        })
+        
+    return render(request, "room.html", {"room_name": room_name,"room_actual_name": req_room_name,"user_data":user_data})
 
 
 # verify room exists and verify room user
