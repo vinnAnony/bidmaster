@@ -42,14 +42,14 @@ def room(request, room_name):
             messages.error(request, "Room does not exist.")
             return redirect(reverse("bidding:index"))        
         
-        verify_room_and_room_user(request,req_room_id,req_user.id)
+        verify_room_and_room_user(request,req_room_id["room_id"],req_user.id)
         
         user_data = json.dumps({
             'id': req_user.id,
             'username': req_user.username,
         })
         
-    return render(request, "room.html", {"room_name": room_name,"room_actual_name": req_room_name,"user_data":user_data})
+    return render(request, "room.html", {"room_id": req_room_id["room_id"],"room_name": room_name,"room_actual_name": req_room_name,"user_data":user_data})
 
 
 # verify room exists and verify room user

@@ -156,3 +156,26 @@ class AuctionRoomUser(models.Model):
 
     def get_absolute_url(self):
         return reverse("auction-room-user-detail", kwargs={"pk": self.pk})
+
+
+class AuctionLog(models.Model):
+    id = models.UUIDField(
+        primary_key=True, unique=True, default=uuid.uuid4, editable=False
+    )
+    auction_room = models.ForeignKey(AuctionRoom, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    amount = models.DecimalField(
+        max_digits=11, decimal_places=2, null=False, blank=False
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Auction Log"
+        verbose_name_plural = "Auction Logs"
+
+    def __str__(self):
+        return self.id
+
+    def get_absolute_url(self):
+        return reverse("auction-log-detail", kwargs={"pk": self.pk})
