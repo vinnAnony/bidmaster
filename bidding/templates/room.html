@@ -1,4 +1,4 @@
-{% load django_browser_reload %}
+{% comment %} {% load django_browser_reload %} {% endcomment %}
 {% load compress %}
 {% load static %}
 <!DOCTYPE html>
@@ -41,6 +41,8 @@
     {{ room_name|json_script:"room-name" }}
     <script>
       const currentUser = {{ user_data|safe }};
+      const currentRoomId = '{{ room_id|escapejs }}';
+      
       const roomName = JSON.parse(
         document.getElementById("room-name").textContent
       );
@@ -101,6 +103,7 @@
           JSON.stringify({
             message: message,
             username: currentUser.username,
+            room_id: currentRoomId,
           })
         );
         messageInputDom.value = "";
