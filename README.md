@@ -12,4 +12,4 @@ BidMaster provides the following features:
 - [x] Create, edit and delete bidders
 - [x] Create, edit and delete rooms (for bidding)
 - [x] Websockets server for real-time bidding
-- [ ] Use MongoDB to store data
+- [x] Use MongoDB to store bidding logs
