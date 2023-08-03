@@ -1,7 +1,6 @@
 from decimal import Decimal
 import json
 
-from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from bidding.models import AuctionLog,AuctionRoom
@@ -27,13 +26,14 @@ class BiddingConsumer(AsyncWebsocketConsumer):
         message = text_data_json["message"]
         username = text_data_json["username"]
         room_id = text_data_json["room_id"]
+        
+        await self.insert_auction_log(room_id,Decimal(message))
 
         # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name, {"type": "bid_message", "message": message,"username": username}
         )
         
-        await self.insert_auction_log(room_id,Decimal(message))
 
     # Receive message from room group
     async def bid_message(self, event):
@@ -50,5 +50,3 @@ class BiddingConsumer(AsyncWebsocketConsumer):
             auction_room_id = str(auction_room.id),
             user_id = str(self.user.id),
             amount = amount)
-        
-        auction_log.save()

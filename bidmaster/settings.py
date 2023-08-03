@@ -92,11 +92,14 @@ DATABASES = {
     "mongodb": {
         "ENGINE": "djongo",
         "NAME": "bidmaster",
+        "ENFORCE_SCHEMA": True,
         "CLIENT": {
             "host": "mongodb+srv://admin:eEAFeoZuG5TOAtKq@main-cluster.37yyjtc.mongodb.net/?retryWrites=true&w=majority",
         },
     },
 }
+
+DATABASE_ROUTERS = ["bidding.routers.mongo_router.MongoDBRouter"]
 
 
 # Password validation

@@ -3,7 +3,8 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.db import transaction
-
+from djongo import models as djongoModels
+from bson import ObjectId
 
 class Auctioneer(models.Model):
     id = models.UUIDField(
@@ -158,21 +159,20 @@ class AuctionRoomUser(models.Model):
         return reverse("auction-room-user-detail", kwargs={"pk": self.pk})
 
 
-class AuctionLog(models.Model):
-    id = models.UUIDField(
-        primary_key=True, unique=True, default=uuid.uuid4, editable=False
-    )
-    auction_room = models.ForeignKey(AuctionRoom, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    amount = models.DecimalField(
+class AuctionLog(djongoModels.Model):
+    id = djongoModels.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
+    auction_room_id = djongoModels.CharField(max_length=250)
+    user_id = djongoModels.IntegerField(null=False, blank=False)
+    amount = djongoModels.DecimalField(
         max_digits=11, decimal_places=2, null=False, blank=False
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = djongoModels.DateTimeField(auto_now_add=True)
+    updated_at = djongoModels.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Auction Log"
         verbose_name_plural = "Auction Logs"
+        managed = False
 
     def __str__(self):
         return self.id
