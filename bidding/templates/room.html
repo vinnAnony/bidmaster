@@ -63,6 +63,7 @@
       const biddingSocket = new WebSocket(
         "ws://" + window.location.host + "/ws/bidding/" + roomName + "/"
       );
+      let isOpening = true;
 
       biddingSocket.onmessage = function (e) {
         if(submitLoading){
@@ -99,8 +100,25 @@
                 
       };
 
-      biddingSocket.onclose = function (e) {
-        console.error("Bidding socket closed unexpectedly");
+      biddingSocket.onopen = function (event) {
+        console.log("WebSocket connection established successfully.");
+        isOpening = false;
+      };
+
+      biddingSocket.onclose = function (event) {
+        setTimeout(function () {
+          if (isOpening) {
+            // WebSocket was closed unexpectedly but was just delayed in opening.
+            console.log("WebSocket connection closed unexpectedly.");
+          } else {
+            // WebSocket is not in the process of opening, it's a genuine close event.
+            console.log("WebSocket connection closed.");
+          }
+        }, 100);
+      };
+
+      biddingSocket.onerror = function (event) {
+        console.error("WebSocket error:", event);
       };
 
       document.querySelector("#bidding-message-input").focus();
