@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -13,7 +14,7 @@ SECRET_KEY = "django-insecure-k-5_hp%uqc^d+^189lh(euf9+m_m!v+jeok3t2q1)j^yqb96!g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -31,6 +32,8 @@ INSTALLED_APPS = [
     "bidding",
     # Django channels
     "channels",
+    "compressor",
+    # "django_browser_reload",
 ]
 
 MIDDLEWARE = [
@@ -41,6 +44,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = "bidmaster.urls"
@@ -48,7 +52,11 @@ ROOT_URLCONF = "bidmaster.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            BASE_DIR / "templates",
+            BASE_DIR / "bidmaster/templates",
+            BASE_DIR / "bidding/templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -80,8 +88,18 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
+    "mongodb": {
+        "ENGINE": "djongo",
+        "NAME": "bidmaster",
+        "ENFORCE_SCHEMA": True,
+        "CLIENT": {
+            "host": "mongodb+srv://admin:eEAFeoZuG5TOAtKq@main-cluster.37yyjtc.mongodb.net/?retryWrites=true&w=majority",
+        },
+    },
 }
+
+DATABASE_ROUTERS = ["bidding.routers.mongo_router.MongoDBRouter"]
 
 
 # Password validation
@@ -120,6 +138,22 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIRS = [BASE_DIR / "static"]
+# Add compression and caching support
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+COMPRESS_ROOT = BASE_DIR / "static"
+COMPRESS_ENABLED = True
+STATICFILES_FINDERS = [
+    "compressor.finders.CompressorFinder",
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

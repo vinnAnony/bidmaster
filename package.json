@@ -1,0 +1,20 @@
+{
+  "name": "bidmaster",
+  "version": "1.0.0",
+  "description": "Bidding platform",
+  "scripts": {
+    "build": "postcss ./static/css/styles.css -o ./static/css/main.min.css",
+    "start": "npx tailwindcss -i ./static/css/styles.css -o ./static/css/main.css --watch"
+  },
+  "author": "Vinn Njeru",
+  "license": "ISC",
+  "homepage": "https://github.com/vinnAnony/bidmaster#readme",
+  
+  "dependencies": {},
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.27",
+    "postcss-cli": "^10.1.0",
+    "tailwindcss": "^3.3.3"
+  }
+}

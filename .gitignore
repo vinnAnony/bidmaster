@@ -137,3 +137,9 @@ media/
 
 # staticfiles
 staticfiles/
+
+# node modules
+node_modules/
+
+# compressed cache
+static/CACHE

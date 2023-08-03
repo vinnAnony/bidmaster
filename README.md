@@ -6,9 +6,10 @@ A Django web app that manages live bidding in real-time using Websockets.
 
 BidMaster provides the following features:
 
-- [ ] User authentication and authorization
-- [ ] Create, edit and delete bids/auctions
-- [ ] Create, edit and delete auctioneers
-- [ ] Create, edit and delete bidders
-- [ ] Create, edit and delete rooms (for bidding)
-- [ ] Websockets server for real-time bidding
+- [x] User authentication and authorization
+- [x] Create, edit and delete bids/auctions
+- [x] Create, edit and delete auctioneers
+- [x] Create, edit and delete bidders
+- [x] Create, edit and delete rooms (for bidding)
+- [x] Websockets server for real-time bidding
+- [x] Use MongoDB to store bidding logs

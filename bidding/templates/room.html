@@ -1,30 +1,124 @@
+{% comment %} {% load django_browser_reload %} {% endcomment %}
+{% load compress %}
+{% load static %}
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Bidding Room</title>
+    <title>{{ room_actual_name }}</title>
+    {% compress css %}
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" />
+    {% endcompress %}
   </head>
-  <body>
-    <textarea id="bidding-log" cols="100" rows="20"></textarea><br />
-    <input id="bidding-message-input" type="text" size="100" /><br />
-    <input id="bidding-message-submit" type="button" value="Send" />
+  <body class="flex flex-col items-center justify-center w-screen min-h-screen bg-gray-100 text-gray-800 p-10">
+
+    <h2>{{ room_actual_name }}</h2>
+    <!-- Component Start -->
+    <div class="flex flex-col flex-grow w-full max-w-md bg-white shadow-xl rounded-lg overflow-hidden">
+      <div id="bidding-log" class="flex flex-col flex-grow h-0 p-4 overflow-auto">
+        <!-- Bidding messages -->
+        
+        <!-- Bidding messages End-->
+      </div>
+      
+      <div class="bg-gray-300 p-4">
+        <div class="flex items-center w-full justify-end">
+          <span id="submitting-message" class="hidden ml-2 text-gray-500 text-sm">Placing bid...</span>
+        </div>
+        <div class="flex items-center justify-between w-full p-3 gap-2 border-t border-gray-300">
+                <input id="bidding-message-input" class="flex items-center h-10 w-full rounded px-3 text-sm" type="text" placeholder="Type your bid amount...">
+              <button type="submit" id="bidding-message-submit">
+                <svg id="submit-icon" class="w-5 h-5 text-gray-500 origin-center transform rotate-90" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                </svg>
+                <svg id="loading-circle" aria-hidden="true" class="hidden h-5 w-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                  <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Component End  -->
+
     {{ room_name|json_script:"room-name" }}
     <script>
+      const currentUser = {{ user_data|safe }};
+      const currentRoomId = '{{ room_id|escapejs }}';
+      
       const roomName = JSON.parse(
         document.getElementById("room-name").textContent
       );
 
+      const submitButton = document.querySelector("#bidding-message-submit");
+      const loadingCircle = document.querySelector("#loading-circle");
+      const submittingMessage = document.querySelector("#submitting-message");
+      const submitIcon = document.querySelector("#submit-icon");
+      var submitLoading = false;
+
       const biddingSocket = new WebSocket(
         "ws://" + window.location.host + "/ws/bidding/" + roomName + "/"
       );
+      let isOpening = true;
 
       biddingSocket.onmessage = function (e) {
+        if(submitLoading){
+          isNotSubmitting();
+        }
+        
         const data = JSON.parse(e.data);
-        document.querySelector("#bidding-log").value += data.message + "\n";
+
+        if(currentUser.username == data.username){
+          //sent message
+          document.querySelector("#bidding-log").innerHTML += 
+          '<div class="flex w-full mt-2 space-x-3 max-w-xs ml-auto justify-end">'+
+            '<div>'+
+              '<div class="bg-blue-600 text-white p-3 rounded-l-lg rounded-br-lg">'+
+                '<p class="text-sm">'+data.message+'</p>'+
+              '</div>'+
+              '<span class="text-xs text-gray-500 leading-none">'+new Date()+'</span>'+
+            '</div>'+
+            '<div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300"></div>'+
+          '</div>';
+        } else{
+          //received message
+          document.querySelector("#bidding-log").innerHTML += 
+          '<div class="flex w-full mt-2 space-x-3 max-w-xs">'+
+            '<div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300"></div>'+
+            '<div>'+
+              '<div class="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">'+
+                '<p class="text-sm">'+data.message+'</p>'+
+              '</div>'+
+              '<span class="text-xs text-gray-500 leading-none">'+new Date()+'</span>'+
+            '</div>'+
+          '</div>';
+        }
+                
       };
 
-      biddingSocket.onclose = function (e) {
-        console.error("Bidding socket closed unexpectedly");
+      biddingSocket.onopen = function (event) {
+        console.log("WebSocket connection established successfully.");
+        isOpening = false;
+      };
+
+      biddingSocket.onclose = function (event) {
+        setTimeout(function () {
+          if (isOpening) {
+            // WebSocket was closed unexpectedly but was just delayed in opening.
+            console.log("WebSocket connection closed unexpectedly.");
+          } else {
+            // WebSocket is not in the process of opening, it's a genuine close event.
+            console.log("WebSocket connection closed.");
+          }
+        }, 100);
+      };
+
+      biddingSocket.onerror = function (event) {
+        console.error("WebSocket error:", event);
       };
 
       document.querySelector("#bidding-message-input").focus();
@@ -43,10 +137,28 @@
         biddingSocket.send(
           JSON.stringify({
             message: message,
+            username: currentUser.username,
+            room_id: currentRoomId,
           })
         );
+        isSubmitting();
         messageInputDom.value = "";
       };
+
+      function isSubmitting(){
+        submitLoading = true;
+        submitButton.disabled = true;
+        loadingCircle.classList.remove('hidden');
+        submittingMessage.classList.remove('hidden');
+        submitIcon.classList.add('hidden');
+      }
+      function isNotSubmitting(){
+        submitLoading = false;
+        submitButton.disabled = false;
+        loadingCircle.classList.add('hidden');
+        submittingMessage.classList.add('hidden');
+        submitIcon.classList.remove('hidden');
+      }
     </script>
   </body>
 </html>
