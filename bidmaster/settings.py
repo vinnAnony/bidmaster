@@ -1,22 +1,26 @@
 import os
+import environ
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# load environment variables
+env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-k-5_hp%uqc^d+^189lh(euf9+m_m!v+jeok3t2q1)j^yqb96!g"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
-
-
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
+CSRF_TRUSTED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
 # Application definition
 
 INSTALLED_APPS = [
@@ -76,7 +80,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [env("REDIS_URL")],
         },
     },
 }
@@ -94,7 +98,7 @@ DATABASES = {
         "NAME": "bidmaster",
         "ENFORCE_SCHEMA": True,
         "CLIENT": {
-            "host": "mongodb+srv://admin:eEAFeoZuG5TOAtKq@main-cluster.37yyjtc.mongodb.net/?retryWrites=true&w=majority",
+            "host": env("MONGO_DB_URL"),
         },
     },
 }
