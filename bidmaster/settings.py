@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # local apps
     "bidding",
+    "authentic",
     # Django channels
     "channels",
     "compressor",
