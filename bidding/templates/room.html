@@ -60,8 +60,14 @@
       const submitIcon = document.querySelector("#submit-icon");
       var submitLoading = false;
 
+      var httpProtocol = 'http://'; 
+      var wsProtocol = 'ws://';
+      if (window.location.protocol === 'https:') {
+          httpProtocol = 'https://';
+          wsProtocol = 'wss://';
+      }
       const biddingSocket = new WebSocket(
-        "ws://" + window.location.host + "/ws/bidding/" + roomName + "/"
+        wsProtocol + window.location.host + "/ws/bidding/" + roomName + "/"
       );
       let isOpening = true;
 
